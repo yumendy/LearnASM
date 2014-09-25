@@ -1,0 +1,14 @@
+﻿生成启动时间为 2014/9/23 21:26:57。
+     1>项目“E:\汇编\homework\basic\helloworld\helloworld.vcxproj”在节点 2 上(Build 个目标)。
+     1>_MASM:
+         Assembling test.asm...
+         cmd.exe /C "C:\Users\艺\AppData\Local\Temp\tmp80d03aabcd4349129c9af36a769b2a7e.cmd"
+         ml.exe /c /nologo /Zi /Fo"Debug\test.obj" /Fl"helloworld.lst" /I "C:\Irvine" /W3 /errorReport:prompt  /Tatest.asm
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\汇编\homework\basic\Debug\helloworld.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\Irvine kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib irvine32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\汇编\homework\basic\Debug\helloworld.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\汇编\homework\basic\Debug\helloworld.lib" /MACHINE:X86 Debug\test.obj
+         helloworld.vcxproj -> E:\汇编\homework\basic\Debug\helloworld.exe
+     1>已完成生成项目“E:\汇编\homework\basic\helloworld\helloworld.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:04.74
