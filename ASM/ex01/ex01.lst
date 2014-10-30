@@ -1,0 +1,234 @@
+Microsoft (R) Macro Assembler Version 12.00.30723.0	    10/28/14 01:39:43
+MASM Buffer						(main.asm  Page 1 - 1
+
+
+				TITLE MASM Buffer						(main.asm)
+
+				; Description:
+				; 
+				; Revision date:
+
+				.686P		; Pentium Pro or later
+				.MODEL flat, stdcall
+				.STACK 4096
+				option casemap:none;  大小写不敏感
+
+					
+				printf          PROTO C :ptr byte,:vararg
+				scanf           PROTO C :dword,:vararg
+				gets		PROTO C :ptr byte
+				getchar		PROTO C
+				_getche   PROTO C
+				ExitProcess	PROTO :DWORD	  	; exit program
+				psum		PROTO :DWORD
+
+ = INVOKE ExitProcess,0		exit equ <INVOKE ExitProcess,0>
+
+				chr$ MACRO any_text:VARARG
+				        LOCAL txtname
+				        .data
+				          IFDEF __UNICODE__
+				            WSTR txtname,any_text
+				            align 4
+				            .code
+				            EXITM <OFFSET txtname>
+				          ENDIF
+
+				          txtname db any_text,0
+				          align 4
+				        .code
+				          EXITM <OFFSET txtname>
+				ENDM
+
+				INCLUDELIB ..\USER32.LIB
+				INCLUDELIB ..\KERNEL32.LIB
+				INCLUDELIB ..\MSVCRT.LIB
+
+ 00000000			.data
+
+ 00000000  00000010 [		buf byte 16 dup(?)
+	    00
+	   ]
+ 00000010 00000000		ip dword 0
+ 00000014 00000000		op dword 0
+ 00000018 00			n byte 0
+ 00000019 00			_char byte 0
+
+ 00000000			.code
+
+				;iq(&buf，&ip，chr)
+ 00000000			iq PROC
+ 00000000  55			  push ebp
+ 00000001  8B EC		  mov ebp, esp
+				  .if n == sizeof buf
+ 0000001A		     1	        .data
+ 0000001A 0D 0A 54 68 65     1	          ??0000 db 0dh,0ah,"The querry is full!",0dh,0ah,0
+	   20 71 75 65 72
+	   72 79 20 69 73
+	   20 66 75 6C 6C
+	   21 0D 0A 00
+ 0000000C		     1	        .code
+				      invoke  printf,chr$(0dh,0ah,"The querry is full!",0dh,0ah)
+ 00000019  B8 00000000		      mov eax, 0
+ 0000001E  5D			      pop ebp
+ 0000001F  C3			      ret
+				  .endif
+ 00000020  8B 5D 10		  mov ebx, [ebp + 16];buf的地址
+ 00000023  8B 4D 0C		  mov ecx, [ebp + 12];ip的地址
+ 00000026  03 19		  add ebx, [ecx];插入位置的地址
+ 00000028  8A 45 08		  mov al, [ebp + 8]
+ 0000002B  88 03		  mov [ebx], al
+ 0000002D  FE 05 00000018 R	  inc n
+ 00000033  FF 05 00000010 R	  inc ip
+				  .if ip == 16
+ 00000042  C7 05 00000010 R	      mov ip, 0
+	   00000000
+				  .endif
+ 0000004C  B8 00000001		  mov eax, 1
+ 00000051  5D			  pop ebp
+ 00000052  C3			  ret
+
+ 00000053			iq ENDP
+
+				;oq(&buf,&op,&chr)
+ 00000053			oq PROC
+ 00000053  55			  push ebp
+ 00000054  8B EC		  mov ebp, esp
+				  .if n == 0
+ 00000034		     1	        .data
+ 00000034 0D 0A 54 68 65     1	          ??0001 db 0dh,0ah,"The querry is empty!",0dh,0ah,0
+	   20 71 75 65 72
+	   72 79 20 69 73
+	   20 65 6D 70 74
+	   79 21 0D 0A 00
+ 0000005F		     1	        .code
+				      invoke printf,chr$(0dh,0ah,"The querry is empty!",0dh,0ah)
+ 0000006C  B8 00000000		      mov eax, 0
+ 00000071  5D			      pop ebp
+ 00000072  C3			      ret
+				  .endif
+ 00000073  8B 5D 10		  mov ebx,[ebp + 16];buf的地址
+ 00000076  8B 4D 0C		  mov ecx, [ebp + 12];ip的地址
+ 00000079  03 19		  add ebx, [ecx];出队元素的地址
+ 0000007B  8A 03		  mov al, [ebx]
+ 0000007D  8B 55 08		  mov edx, [ebp + 8];char的地址
+ 00000080  88 02		  mov [edx], al
+ 00000082  FE 0D 00000018 R	  dec n
+ 00000088  FF 05 00000014 R	  inc op
+				  .if op == 16
+ 00000097  C7 05 00000014 R	      mov op, 0
+	   00000000
+				  .endif
+ 000000A1  B8 00000001		  mov eax, 1
+ 000000A6  5D			  pop ebp
+ 000000A7  C3			  ret
+
+ 000000A8			oq ENDP
+
+ 000000A8			main	PROC
+ 000000A8			L1:
+ 000000A8  B8 00000000		  mov eax, 0
+				  invoke _getche
+				  .if al == 1bh
+ 000000B6  EB 6E		      jmp L0
+				  .elseif al >= 30h && al <= 39h
+ 000000C2  EB 16		      jmp L2
+				  .elseif al >= 41h && al <= 5ah
+ 000000CE  EB 0A		      jmp L2
+				  .elseif al >= 61h && al <= 7ah
+ 000000DA			L2:
+ 000000DA  68 00000000 R	      push offset buf
+ 000000DF  68 00000010 R	      push offset ip
+ 000000E4  50			      push eax
+ 000000E5  E8 FFFFFF16		      call iq
+				  .elseif al == '-'
+ 000000F0  68 00000000 R	      push offset buf
+ 000000F5  68 00000014 R	      push offset op
+ 000000FA  68 00000019 R	      push offset _char
+ 000000FF  E8 FFFFFF4F		      call oq
+ 00000050		     1	        .data
+ 00000050 0D 0A 54 68 65     1	          ??0002 db 0dh,0ah,"The element out querry is: %c",0dh,0ah,0
+	   20 65 6C 65 6D
+	   65 6E 74 20 6F
+	   75 74 20 71 75
+	   65 72 72 79 20
+	   69 73 3A 20 25
+	   63 0D 0A 00
+ 00000104		     1	        .code
+				      invoke printf,chr$(0dh,0ah,"The element out querry is: %c",0dh,0ah), _char
+				  .endif
+
+ 0000011F  B9 00000003		  mov ecx, 3
+ 00000124  E2 82		  loop L1
+ 00000126			L0:
+					exit
+ 0000012D			main	ENDP
+
+				  END main
+Microsoft (R) Macro Assembler Version 12.00.30723.0	    10/28/14 01:39:43
+MASM Buffer						(main.asm  Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+chr$ . . . . . . . . . . . . . .	Func
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000074 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000012D Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+_getche  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+getchar  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+gets . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+iq . . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000053 Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 000000A8 _TEXT	Length= 00000085 Public STDCALL
+  L1 . . . . . . . . . . . . . .	L Near	 000000A8 _TEXT	
+  L2 . . . . . . . . . . . . . .	L Near	 000000DA _TEXT	
+  L0 . . . . . . . . . . . . . .	L Near	 00000126 _TEXT	
+oq . . . . . . . . . . . . . . .	P Near	 00000053 _TEXT	Length= 00000055 Public STDCALL
+printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+psum . . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+??0000 . . . . . . . . . . . . .	Byte	 0000001A _DATA	
+??0001 . . . . . . . . . . . . .	Byte	 00000034 _DATA	
+??0002 . . . . . . . . . . . . .	Byte	 00000050 _DATA	
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000003h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_char  . . . . . . . . . . . . .	Byte	 00000019 _DATA	
+buf  . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
+ip . . . . . . . . . . . . . . .	DWord	 00000010 _DATA	
+n  . . . . . . . . . . . . . . .	Byte	 00000018 _DATA	
+op . . . . . . . . . . . . . . .	DWord	 00000014 _DATA	
+
+	   0 Warnings
+	   0 Errors
