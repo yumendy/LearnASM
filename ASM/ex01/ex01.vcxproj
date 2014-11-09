@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="buffer.asm" />
+    <MASM Include="EXTSUB.asm" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2188D24D-C56B-4BEA-9C4C-3277BFD032EA}</ProjectGuid>

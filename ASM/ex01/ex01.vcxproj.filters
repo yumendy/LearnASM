@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="buffer.asm">
+    <MASM Include="EXTSUB.asm">
       <Filter>源文件</Filter>
     </MASM>
   </ItemGroup>
